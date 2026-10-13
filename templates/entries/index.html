@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f7fb">
+    <title>Entrybook | Your thoughts, collected</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+    <script src="{% static 'js/entries.js' %}?v=1" defer></script>
+</head>
+<body>
+    <main class="page-shell">
+        <header class="topbar">
+            <a class="brand" href="{% url 'entry_list' %}" aria-label="Entrybook home">
+                <span class="brand-mark" aria-hidden="true">e</span>
+                <span>entrybook</span>
+            </a>
+            <span class="topbar-note"><span class="status-dot"></span> Your personal collection</span>
+        </header>
+
+        <section class="hero" aria-labelledby="page-title">
+            <div class="hero-copy">
+                <p class="eyebrow">A little space for your thoughts</p>
+                <h1 id="page-title">Good things are<br><span>worth keeping.</span></h1>
+                <p class="intro">Save a note, a moment, or a message. It’ll be right here whenever you need it.</p>
+            </div>
+            <div class="hero-stats" aria-label="Collection summary">
+                <span class="stat-number">{{ entries|length }}</span>
+                <span class="stat-label">moments<br>collected</span>
+                <span class="stat-sparkle" aria-hidden="true">✳</span>
+            </div>
+        </section>
+
+        {% for message in messages %}
+            <div class="flash-message" role="status">
+                <span class="flash-check" aria-hidden="true">✓</span>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="content-grid">
+            <section class="compose-card" aria-labelledby="form-title">
+                <div class="card-heading">
+                    <span class="heading-icon" aria-hidden="true">✎</span>
+                    <div>
+                        <p class="card-kicker">MAKE IT YOURS</p>
+                        <h2 id="form-title">Add a moment</h2>
+                    </div>
+                </div>
+                <p class="form-intro">A name, an email, and whatever’s on your mind.</p>
+                <form method="post" class="entry-form">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="form-field">
+                        <label for="{{ form.name.id_for_label }}">Your name</label>
+                        {{ form.name }}
+                        {{ form.name.errors }}
+                    </div>
+                    <div class="form-field">
+                        <label for="{{ form.email.id_for_label }}">Email address</label>
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+                    <div class="form-field">
+                        <div class="label-row">
+                            <label for="{{ form.message.id_for_label }}">Your message</label>
+                            <span id="character-count" class="character-count">0 characters</span>
+                        </div>
+                        {{ form.message }}
+                        {{ form.message.errors }}
+                    </div>
+                    <button type="submit" class="submit-button">
+                        <span>Save this moment</span>
+                        <span class="button-arrow" aria-hidden="true">→</span>
+                    </button>
+                </form>
+                <p class="privacy-note"><span aria-hidden="true">🔒</span> Saved safely in your collection</p>
+            </div>
+
+            <section class="entries-section" aria-labelledby="entries-title">
+                <div class="entries-heading">
+                    <div>
+                        <p class="card-kicker">YOUR COLLECTION</p>
+                        <h2 id="entries-title">All moments <span class="heading-count">{{ entries|length }}</span></h2>
+                    </div>
+                    <label class="search-box">
+                        <span class="search-icon" aria-hidden="true">⌕</span>
+                        <span class="visually-hidden">Search entries</span>
+                        <input id="entry-search" type="search" placeholder="Find a moment..." autocomplete="off">
+                    </label>
+                </div>
+                <div class="entry-list" id="entry-list">
+                    {% for entry in entries %}
+                        <article class="entry-card" data-entry-row>
+                            <div class="entry-avatar" aria-hidden="true">{{ entry.name|first|upper }}</div>
+                            <div class="entry-content">
+                                <div class="entry-meta">
+                                    <h3>{{ entry.name }}</h3>
+                                    <time datetime="{{ entry.created_at|date:'c' }}">{{ entry.created_at|date:"M j, Y · g:i a" }}</time>
+                                </div>
+                                <a class="entry-email" href="mailto:{{ entry.email }}">{{ entry.email }}</a>
+                                <p class="entry-message">{{ entry.message }}</p>
+                            </div>
+                        </article>
+                    {% empty %}
+                        <div class="empty-state" id="empty-state">
+                            <span class="empty-illustration" aria-hidden="true">✳</span>
+                            <h3>Your collection starts here</h3>
+                            <p>Every great collection begins with one. Add your first moment using the form.</p>
+                        </div>
+                    {% endfor %}
+                    <p class="no-search-results" id="no-search-results" hidden>No moments match your search. Try another name or message.</p>
+                </div>
+                <p class="results-summary" id="results-summary" aria-live="polite"></p>
+            </section>
+        </div>
+
+        <footer class="page-footer">Made for the moments you want to keep <span aria-hidden="true">✳</span></footer>
+    </main>
+</body>
+</html>

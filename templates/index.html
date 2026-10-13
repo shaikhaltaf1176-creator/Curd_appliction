@@ -1,0 +1,16 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Django Website</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>Welcome to Django!</h1>
+    <button onclick="showMessage()">Click Me</button>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>
